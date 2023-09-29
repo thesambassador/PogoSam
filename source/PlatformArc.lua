@@ -10,6 +10,8 @@ class('PlatformArc').extends()
 function PlatformArc:init(x, y, radius, startAngle, endAngle)
     PlatformArc.super.init(self)
     
+    self.circleRadius = radius
+    self.circleCenter = playdate.geometry.point.new(x,y)
     self.midPoint = self:GetMidpoint(startAngle, endAngle)
     self.size = self:GetSize(startAngle, endAngle)
     self.currentHalfSize = 1
@@ -50,6 +52,7 @@ end
 function PlatformArc:setSpeed(speed)
     self.speed = speed
 end
+
 
 function PlatformArc:update()
     if(self.currentHalfSize < self.targetHalfSize)then

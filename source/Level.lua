@@ -33,6 +33,8 @@ function Level:init()
     self.player = Player(circleCenter, circleRadius)
     self.player:add()
 
+    self.ArcDeaths = ArcDeathEffect(circleCenter, adjustedRadius + 3)
+
     self.score = 0
 
     self.arcs = {}
@@ -183,6 +185,8 @@ function Level:update()
             if(i ~= -1)then
                 self.player:bounce()
                 self:addNewRandomArc()
+                self.ArcDeaths:addArcEffect(self.arcs[i])
+
                 table.remove(self.arcs, i)
                 self:incrementScore(1)
                 
@@ -196,9 +200,11 @@ function Level:update()
         gfx.drawTextAligned("B to Reset", 200, 140, kTextAlignment.center)
     end
     self:updateOrbiters()
+    self.ArcDeaths:update()
     self:drawCircle(circleCenter, circleRadius, circleLineWidth)
 	self:drawArcs()
     self:drawScore()
+    self.ArcDeaths:draw()
 
     if(playdate.buttonJustPressed(playdate.kButtonA))then
 		local test = self:getRandomNonOverlappingArcStartLocation(30)

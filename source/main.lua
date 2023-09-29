@@ -9,6 +9,7 @@ import "PlatformArc"
 import "Level"
 import "soundManager"
 import "utility"
+import "ArcDeathEffect"
 
 local gfx <const> = playdate.graphics
 local font = gfx.font.new('font/Mini Sans 2X')
@@ -30,7 +31,6 @@ end
 function playdate.gameWillPause()
 	print("pause")
 end
-
 
 function playdate.update()
 
