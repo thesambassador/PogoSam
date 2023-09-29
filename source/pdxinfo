@@ -1,0 +1,6 @@
+name=PogoSam
+author=thesambassador
+description=Simple crank based game for playdate
+bundleID=com.thesambassador.pogosam
+version=0.0.1
+buildNumber=1
