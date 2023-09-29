@@ -41,7 +41,7 @@ function ArcDeathEffect:addSubArc(angleStart, angleEnd)
     subArc.radiusTimer = playdate.timer.new(animTime-50, self.circleRadius, finalRadius) -- the -50 is a quick hack toendAngleTimer avoid some artifacts from the other timers
     subArc.radiusTimer.updateCallback = function (timer)
         subArc.arc.radius = timer.value
-        print(timer.value)
+        --print(timer.value)
     end
     subArc.radiusTimer.timerEndedCallback = function (timer)
         subArc.alive = false

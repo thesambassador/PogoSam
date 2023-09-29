@@ -180,7 +180,7 @@ end
 local testArc = nil
 function Level:update()
     if(self.player.alive)then
-        if(self.player.positionHeight <= 0)then
+        if(self.player.positionHeight <= 5 and not self.player.justBounced)then --now this is 5 to deal with the animator not always getting to 0
             local i = self:isAngleOverAnyArc(self.player.positionOnCircle)
             if(i ~= -1)then
                 self.player:bounce()
