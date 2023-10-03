@@ -7,16 +7,17 @@ import "CoreLibs/graphics"
 import "CoreLibs/math"
 import "CoreLibs/sprites"
 import "CoreLibs/object"
+import "CoreLibs/ui"
 
 
 local circleCenter = playdate.geometry.point.new(200,120)
 local circleRadius = 100
-local maxDifficulty = 50
+local maxDifficulty = 100
 
 local playerHeight = 16
 local halfPlayerHeight = 8
 
-local adjustedRadius = circleRadius + halfPlayerHeight --incorporates player's height
+local adjustedRadius = circleRadius + halfPlayerHeight + 3--incorporates player's height
 
 local circleLineWidth = 2
 
@@ -33,12 +34,12 @@ function Level:init()
     self.player = Player(circleCenter, circleRadius)
     self.player:add()
 
-    self.ArcDeaths = ArcDeathEffect(circleCenter, adjustedRadius + 3)
+    self.ArcDeaths = ArcDeathEffect(circleCenter, adjustedRadius)
 
     self.score = 0
-
+    playdate.ui.crankIndicator:start()
     self.arcs = {}
-    self:makeArcs()
+    self:addNextArc()
     self.orbiters = {}
 
 end
@@ -62,16 +63,58 @@ function Level:drawScore()
     gfx.drawText(tostring(self.score), 0, 0)
 end
 
+function Level:addNextArc()
+    if(self.score > 3)then
+        self:addNewRandomArc()
+    else
+        local arcSpeed = 0
+        local startAngle = 0
+        local endAngle = 359.9
+        
+        if(self.score == 0)then
+            self:addArc(startAngle, endAngle, arcSpeed)
+        --second arc is underneith player, full half circle
+        elseif(self.score == 1)then
+            local midpoint = self.player.positionOnCircle
+
+            startAngle = midpoint - 90
+            endAngle = midpoint + 90
+            self:addArc(startAngle, endAngle, arcSpeed)
+        --third arc is top half circle, opposite player
+        elseif(self.score == 2)then
+            local midpoint = self.player.positionOnCircle + 180
+
+            startAngle = midpoint - 90
+            endAngle = midpoint + 90
+            self:addArc(startAngle, endAngle, arcSpeed)
+        elseif(self.score == 3)then
+            self:addNewRandomArc()
+            self:addNewRandomArc()
+        end
+    
+        
+    end
+
+end
+
+function Level:addArc(startAngle, endAngle, speed)
+    local arc = PlatformArc(circleCenter.x, circleCenter.y, adjustedRadius, startAngle, endAngle)
+    arc:setSpeed(speed)
+	table.insert(self.arcs, arc)
+end
+
 function Level:addNewRandomArc()
 	
     local arcSize = self:randomFloat(self.minArcSize, self.maxArcSize)
     local startAngle = self:getRandomNonOverlappingArcStartLocation(arcSize)
     local endAngle = startAngle + arcSize
     local arcSpeed = self:randomFloat(self.minArcSpeed, self.maxArcSpeed)
-	local endAngle = startAngle + arcSize
-	local arc = PlatformArc(circleCenter.x, circleCenter.y, adjustedRadius + 3, startAngle, endAngle)
-    arc:setSpeed(arcSpeed)
-	table.insert(self.arcs, arc)
+    --random direction
+    if(math.random() > .5)then
+        arcSpeed *= -1
+    end
+
+    self:addArc(startAngle, endAngle, arcSpeed)
 end
 
 function Level:getRandomNonOverlappingArcStartLocation(newArcSize)
@@ -117,17 +160,10 @@ function Level:randomFloat(min, max)
     return min + math.random() * (max - min)
 end
 
-function Level:makeArcs()
-	
-	local testArc = PlatformArc(circleCenter.x, circleCenter.y, adjustedRadius + 3, 165, 195)
-	table.insert(self.arcs, testArc)
-
-	self:addNewRandomArc()
-
-end
 
 function Level:isAngleOverAnyArc(angle)
 	for i, arc in ipairs(self.arcs) do
+        
 		if(arc:isAngleInArc(angle))then
 			return i
 		end
@@ -158,18 +194,22 @@ function Level:updateOrbiters()
 end
 
 function Level:incrementScore(scoreAmount)
+    local preScoreT = self.score / maxDifficulty
+
     self.score += scoreAmount
     --print(self.score)
+    local scoreThresholds = {.15, .3, .5}
 
     local scoreT = self.score / maxDifficulty
-    if(self.score == 5 or self.score == 10 or self.score == 20)then
-        --print("orbiter")
-        self:addOrbiter()
+    for i, val in ipairs(scoreThresholds) do
+        if(preScoreT < val and scoreT >= val)then
+            self:addOrbiter()
+        end
     end
 
     if(self.score > 5)then
-        self.minArcSpeed = playdate.math.lerp(.5, 1.0, scoreT)
-        self.maxArcSpeed = playdate.math.lerp(1.0, 2.0, scoreT)
+        self.minArcSpeed = playdate.math.lerp(.5, 1.0, scoreT / 2) --going to make speed scale up half as fast as arc size
+        self.maxArcSpeed = playdate.math.lerp(1.0, 2.0, scoreT / 2)
     end
 
     self.minArcSize = playdate.math.lerp(30, 5, scoreT)
@@ -180,15 +220,19 @@ end
 local testArc = nil
 function Level:update()
     if(self.player.alive)then
+        if(not self.player.gameStarted) then
+            playdate.ui.crankIndicator:update()
+        end
         if(self.player.positionHeight <= 5 and not self.player.justBounced)then --now this is 5 to deal with the animator not always getting to 0
             local i = self:isAngleOverAnyArc(self.player.positionOnCircle)
             if(i ~= -1)then
                 self.player:bounce()
-                self:addNewRandomArc()
+                self:incrementScore(1)
+                self:addNextArc()
                 self.ArcDeaths:addArcEffect(self.arcs[i])
 
                 table.remove(self.arcs, i)
-                self:incrementScore(1)
+                
                 
 
             else
@@ -206,11 +250,11 @@ function Level:update()
     self:drawScore()
     self.ArcDeaths:draw()
 
-    if(playdate.buttonJustPressed(playdate.kButtonA))then
-		local test = self:getRandomNonOverlappingArcStartLocation(30)
-		testArc = playdate.geometry.arc.new(circleCenter.x, circleCenter.y, circleRadius+20, test, (test+30) % 360 )
-		print("Test value: ", test)
-	end
+    -- if(playdate.buttonJustPressed(playdate.kButtonA))then
+	-- 	local test = self:getRandomNonOverlappingArcStartLocation(30)
+	-- 	testArc = playdate.geometry.arc.new(circleCenter.x, circleCenter.y, circleRadius+20, test, (test+30) % 360 )
+	-- 	print("Test value: ", test)
+	-- end
     if(testArc ~= nil)then
         gfx.drawArc(testArc)
     end

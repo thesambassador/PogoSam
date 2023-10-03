@@ -1,6 +1,6 @@
-name=PogoSam
+name=Pogo Arc
 author=thesambassador
 description=Simple crank based game for playdate
-bundleID=com.thesambassador.pogosam
-version=0.0.1
+bundleID=com.thesambassador.pogoarc
+version=0.0.5
 buildNumber=1

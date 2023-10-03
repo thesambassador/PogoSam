@@ -12,6 +12,9 @@ function Orbiter:init(circleCenter, circleRadius, height, startAngle)
     self.positionOnCircle = startAngle --current position in circle angle (should be between 0 and 360)
     self.positionHeight = height -- current height 
     self.orbitSpeed = .5
+    if(math.random() > .5) then
+        self.orbitSpeed = -self.orbitSpeed
+    end
     
     self:updatePosition()
     

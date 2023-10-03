@@ -24,19 +24,31 @@ function Player:init(circleCenter, circleRadius)
     self.bounceStrength = 244 / 50.0
     self.bounceTimer = playdate.timer.new(10000)
 
-    
-    self.jumpAnimator = playdate.graphics.animator.new(600, -1, 70, playdate.easingFunctions.outCubic)
+    self.gameStarted = false
+    self.crankAmountNeededToStart = 360
+
+    self.jumpAnimator = playdate.graphics.animator.new(600, 70, -1, playdate.easingFunctions.inCubic)
     self.jumpAnimator.repeatCount = -1
     self.jumpAnimator.reverses = true
     
-   
-    
-    self.justBounced = false;
-
+    self.justBounced = true;
 
     self.yVelocity = 0.0
     self:setTag(1)
 
+    SoundManager.onMusicLoopCallback = function () self:ResyncWithMusic() end
+
+end
+
+function Player:ResyncWithMusic()
+    --first time start the music
+    if(not self.gameStarted)then
+        SoundManager:prepAndStartMusic()
+    end
+
+    print("before: ", self.positionHeight)
+    self.jumpAnimator:reset()
+    print("after: ", self.jumpAnimator:currentValue())
 end
 
 function Player:bounce()
@@ -66,12 +78,21 @@ function Player:updateInput()
     local cranked = playdate.getCrankChange()
     self.positionOnCircle += cranked
     self.positionOnCircle = self.positionOnCircle % 360
+    self.crankAmountNeededToStart -= math.abs(cranked)
 end
 
 function Player:updatePosition()
-    self.yVelocity -= self.gravity
-    self.positionHeight += self.yVelocity
-    self.positionHeight = self.jumpAnimator:currentValue()
+    
+    if(not self.gameStarted)then
+        self.positionHeight = 70
+        if(self.crankAmountNeededToStart <= 0)then
+            self:ResyncWithMusic()
+            self.gameStarted = true
+        end
+    else
+        self.positionHeight = self.jumpAnimator:currentValue()
+    end
+    
 
     if(self.positionHeight > 20)then
         self.justBounced = false --prevent dying right after bouncing on a platform
@@ -100,6 +121,7 @@ function Player:kill()
     self.alive = false;
     SoundManager:playSound(SoundManager.kSoundDie)
     SoundManager:stopMusic()
+    SoundManager.onMusicLoopCallback = function () end
     --self.jumpAnimator:remove()
     self:remove()
 end

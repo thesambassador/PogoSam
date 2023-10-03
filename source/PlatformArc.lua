@@ -36,13 +36,13 @@ function PlatformArc:GetMidpoint(angle1, angle2)
     return ((angle1 + angle2) / 2) % 360
 end
 
-function PlatformArc:GetSize(angle1, angle2)
+function PlatformArc:GetSize(startAngle, endAngle)
     --if the 2nd angle is less than the 1st, it's wrapped, so averaging the two won't work
     --instead we just add 360 and call it good?
-    if(angle2 < angle1)then
-        angle2 += 360
+    if(endAngle < startAngle)then
+        endAngle += 360
     end
-    return ((angle2 - angle1)) % 360
+    return ((endAngle - startAngle)) % 360
 end
 
 function PlatformArc:draw()
@@ -88,6 +88,9 @@ function PlatformArc:isAngleInArc(angle)
     local adjustedStart = self.arc.startAngle - bounceLeeway
     local adjustedEnd = self.arc.endAngle + bounceLeeway
 
+    print("Angle: ", angle)
+    print("adjustedStart: ", adjustedStart)
+    print("adjustedEnd: ", adjustedEnd)
     --normal case, just check to see if angle is between start and end
     if(adjustedStart < adjustedEnd)then
         if(angle >= adjustedStart and angle <= adjustedEnd)then

@@ -35,13 +35,13 @@ function SoundManager:prepAndStartMusic()
 	SoundManager:stopMusic()
 	
 	SoundManager.shouldPlay = true
-	SoundManager.startLoops= {"sound/music_a1","sound/music_a2"}
-	SoundManager.midLoops = {"sound/music_b1", "sound/music_b2"}
-	SoundManager.endLoops = {"sound/music_c1", "sound/music_c2"}
-	SoundManager.finalLoop = GetRandomElement(SoundManager.endLoops)
+	SoundManager.startLoops= {"sound/music_a1"}
+	SoundManager.midLoops = {"sound/music_a2", "sound/music_b1"}
+	SoundManager.endLoops = {"sound/music_b2", "sound/music_c1"}
+	SoundManager.finalLoop = "sound/music_c1"
 	SoundManager.musicQueue = {GetRandomElement(SoundManager.startLoops), GetRandomElement(SoundManager.midLoops), GetRandomElement(SoundManager.endLoops)}
 	SoundManager.musicLoopIndex = 0
-
+	SoundManager.onMusicLoopCallback = function () end
 	SoundManager:playNext()
 	
 
@@ -57,6 +57,7 @@ function SoundManager:playNext()
 		SoundManager.musicPlayer = snd.fileplayer.new(fileToLoop)
 		SoundManager.musicPlayer:play(1)
 		SoundManager.musicPlayer:setFinishCallback(function() SoundManager:playNext() end)
+		SoundManager.onMusicLoopCallback()
 	end
 end
 

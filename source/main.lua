@@ -20,10 +20,10 @@ math.randomseed(playdate.getSecondsSinceEpoch()) -- seed for math.random
 gfx.setFont(font)
 
 local level = Level()
-level.player:kill() 
+--level.player:kill() 
 
 function reset()
-	SoundManager:prepAndStartMusic()
+	--SoundManager:prepAndStartMusic() done in Player now
 	gfx.sprite.removeAll()
 	level = nil
 	level = Level()
@@ -43,7 +43,7 @@ function playdate.update()
 		reset()
 	end
 
-	
+	playdate.drawFPS(2, 224)
 
 
 end
