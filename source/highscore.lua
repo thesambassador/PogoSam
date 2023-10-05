@@ -7,6 +7,9 @@ function Highscore:init()
     Highscore.super.init(self)
     self.highScores = {}
     self.lastEntry = ""
+    self.entryText = "___"
+    self.showingEntry = false
+    self.showingList = false
 
     self:loadScores()
 end
@@ -33,33 +36,44 @@ function Highscore:drawNameBox()
     
 end
 
+function Highscore:showScoreList(show)
+    self.showingList = show
+end
+
 function Highscore:drawScoreBox()
-    local marginX = 10
-    local marginY = 5
     local origDrawMode = gfx.getImageDrawMode()
-    gfx.fillRoundRect(marginX, marginY, 400-(marginX * 2), 240 - (marginY * 2), 5)
-    local drawY = 2 * marginY
-    local drawX = 2 * marginX
-    local yIncrement = 20
+    if(self.showingList)then
+        local marginX = 10
+        local marginY = 5
+        
+        gfx.fillRoundRect(marginX, marginY, 400-(marginX * 2), 240 - (marginY * 2), 5)
+        local drawY = 2 * marginY
+        local drawX = 2 * marginX
+        local yIncrement = 20
 
-    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+        gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 
-    gfx.drawTextAligned("High Scores", 200, drawY, kTextAlignment.center)
-    drawY += yIncrement
-
-    
-    for i, entry in ipairs(self.highScores) do
-        local rankText = "0"..i
-        if(i == 10)then
-            rankText = i
-        end
-        gfx.drawTextAligned(rankText, 120, drawY, kTextAlignment.left)
-        gfx.drawTextAligned(entry.name, 200, drawY, kTextAlignment.center)
-        gfx.drawTextAligned(entry.score, 260, drawY, kTextAlignment.right)
+        gfx.drawTextAligned("High Scores", 200, drawY, kTextAlignment.center)
         drawY += yIncrement
 
         
+        for i, entry in ipairs(self.highScores) do
+            local rankText = "0"..i
+            if(i == 10)then
+                rankText = i
+            end
+            gfx.drawTextAligned(rankText, 120, drawY, kTextAlignment.left)
+            gfx.drawTextAligned(entry.name, 200, drawY, kTextAlignment.center)
+            gfx.drawTextAligned(entry.score, 260, drawY, kTextAlignment.right)
+            drawY += yIncrement
+
+            
+        end
+
+        w, h = gfx.drawText("Ⓑ Back", marginX + 5, 210)
+
     end
+    
 
     gfx.setImageDrawMode(origDrawMode)
 end
@@ -68,8 +82,10 @@ function Highscore:showKeyboardForEntry(score, hideCallback)
     local entryDisplayWidth = 200
     local entryDisplayHeight = 120
 
-    local thisHighscore = self
+   
     self.entryText = "___"
+    self.showingEntry = true
+    local thisHighscore = self
     --nameBox:add()
 
     playdate.keyboard.textChangedCallback = function ()
@@ -80,6 +96,7 @@ function Highscore:showKeyboardForEntry(score, hideCallback)
         thisHighscore.entryText = playdate.keyboard.text
     end
     playdate.keyboard.keyboardDidHideCallback = function ()
+        self.showingEntry = false
         --playdate.keyboard.text will be an empty string if the user selects the cancel button on the keyboard
         if(playdate.keyboard.text ~= "" and playdate.keyboard.text:len() == 3)then
             self:addEntry(score, playdate.keyboard.text)
@@ -111,6 +128,11 @@ function Highscore:addEntry(newScore, newName)
         playdate.datastore.write(self.highScores, "highscores")
     end
     self:printScores()
+end
+
+function Highscore:resetScores()
+    self.highScores = {}
+    playdate.datastore.write(self.highScores, "highscores")
 end
 
 function Highscore:printScores()

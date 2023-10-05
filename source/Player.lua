@@ -83,7 +83,7 @@ end
 
 function Player:updatePosition()
     
-    if(not self.gameStarted)then
+    if(not self.gameStarted and self.alive)then
         self.positionHeight = 70
         if(self.crankAmountNeededToStart <= 0)then
             self:ResyncWithMusic()

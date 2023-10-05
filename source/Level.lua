@@ -240,9 +240,7 @@ function Level:update()
                 self.player:kill()
             end
         end
-    else
-        gfx.drawTextAligned("Game Over", 200, 100, kTextAlignment.center)
-        gfx.drawTextAligned("B to Reset", 200, 140, kTextAlignment.center)
+        
     end
     self:updateOrbiters()
     self.ArcDeaths:update()
