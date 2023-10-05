@@ -60,7 +60,8 @@ function Level:drawArcs()
 end
 
 function Level:drawScore()
-    gfx.drawText(tostring(self.score), 0, 0)
+    --gfx.drawText(tostring(self.score), 0, 0)
+    gfx.drawTextAligned(self.score, circleCenter.x, circleCenter.y, kTextAlignment.center)
 end
 
 function Level:addNextArc()

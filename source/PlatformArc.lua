@@ -88,9 +88,9 @@ function PlatformArc:isAngleInArc(angle)
     local adjustedStart = self.arc.startAngle - bounceLeeway
     local adjustedEnd = self.arc.endAngle + bounceLeeway
 
-    print("Angle: ", angle)
-    print("adjustedStart: ", adjustedStart)
-    print("adjustedEnd: ", adjustedEnd)
+    --print("Angle: ", angle)
+    --print("adjustedStart: ", adjustedStart)
+    --print("adjustedEnd: ", adjustedEnd)
     --normal case, just check to see if angle is between start and end
     if(adjustedStart < adjustedEnd)then
         if(angle >= adjustedStart and angle <= adjustedEnd)then

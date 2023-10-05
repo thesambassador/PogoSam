@@ -26,7 +26,6 @@ function Orbiter:init(circleCenter, circleRadius, height, startAngle)
 end
 
 function Orbiter:draw(x,y,width,height)
-    local center = self:getCenterPoint()
 
     gfx.fillCircleAtPoint(halfSize, halfSize, halfSize)
 end
