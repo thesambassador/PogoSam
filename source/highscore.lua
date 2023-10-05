@@ -7,7 +7,7 @@ function Highscore:init()
     Highscore.super.init(self)
     self.highScores = {}
     self.lastEntry = ""
-    self.entryText = "___"
+    self.entryText = ""
     self.showingEntry = false
     self.showingList = false
 
@@ -83,8 +83,9 @@ function Highscore:showKeyboardForEntry(score, hideCallback)
     local entryDisplayHeight = 120
 
    
-    self.entryText = "___"
+    self.entryText = self.lastEntry
     self.showingEntry = true
+    playdate.keyboard.text = self.entryText
     local thisHighscore = self
     --nameBox:add()
 
@@ -111,6 +112,7 @@ function Highscore:showKeyboardForEntry(score, hideCallback)
 end
 
 function Highscore:addEntry(newScore, newName)
+    self.lastEntry = newName
     print("Highscore name: ", newName, ": ", newScore)
     local newEntry = {name=newName, score=newScore}
     local inserted = false

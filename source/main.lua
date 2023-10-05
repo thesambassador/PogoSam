@@ -82,8 +82,8 @@ function playdate.update()
 		gameState = kStateDeath
 
 		gfx.drawTextAligned("Game Over", 200, 60, kTextAlignment.center)
-		gfx.drawTextAligned("Ⓐ Submit Score", 200, 100, kTextAlignment.center)
-        gfx.drawTextAligned("Ⓑ Restart", 200, 140, kTextAlignment.center)
+		gfx.drawTextAligned("Ⓐ Submit Score", 200, 140, kTextAlignment.center)
+        gfx.drawTextAligned("Ⓑ Restart", 200, 164, kTextAlignment.center)
 
 		
 

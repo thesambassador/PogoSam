@@ -35,8 +35,8 @@ function SoundManager:prepAndStartMusic()
 	SoundManager:stopMusic()
 	
 	SoundManager.shouldPlay = true
-	SoundManager.startLoops= {"sound/music_a1"}
-	SoundManager.midLoops = {"sound/music_a2", "sound/music_b1"}
+	SoundManager.startLoops= {"sound/music_a2"}
+	SoundManager.midLoops = {"sound/music_b1"}
 	SoundManager.endLoops = {"sound/music_b2", "sound/music_c1"}
 	SoundManager.finalLoop = "sound/music_c1"
 	SoundManager.musicQueue = {GetRandomElement(SoundManager.startLoops), GetRandomElement(SoundManager.midLoops), GetRandomElement(SoundManager.endLoops)}
