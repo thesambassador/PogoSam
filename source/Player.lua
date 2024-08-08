@@ -121,7 +121,7 @@ function Player:kill()
     self.alive = false;
     SoundManager:playSound(SoundManager.kSoundDie)
     SoundManager:stopMusic()
-    SoundManager.onMusicLoopCallback = function () end
+    SoundManager.onMusicLoopCallback = function () end --TODO, change this?
     --self.jumpAnimator:remove()
     self:remove()
 end

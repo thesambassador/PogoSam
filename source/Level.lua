@@ -13,6 +13,8 @@ import "CoreLibs/ui"
 local circleCenter = playdate.geometry.point.new(200,120)
 local circleRadius = 100
 local maxDifficulty = 100
+local pulseMilliseconds = 600
+local pulseCircleWidth = 5
 
 local playerHeight = 16
 local halfPlayerHeight = 8
@@ -31,6 +33,8 @@ function Level:init()
     self.minArcSpeed = 0.0
     self.maxArcSpeed = 0.0
 
+    self.currentLineThickness = 1
+
     self.player = Player(circleCenter, circleRadius)
     self.player:add()
 
@@ -42,11 +46,16 @@ function Level:init()
     self:addNextArc()
     self.orbiters = {}
 
+    SoundManager.onMusicLoopCallback = function () self:ResyncWithMusic() end --todo, fix this to be better
 end
 
 function Level:drawCircle(center, rad, lineWidth)
 	gfx.setLineWidth(lineWidth)
 	gfx.drawCircleAtPoint(center, rad + halfPlayerHeight)
+
+end
+
+function Level:pulseCircle(pulseAmount, pulseDuration)
 
 end
 
@@ -217,6 +226,10 @@ function Level:incrementScore(scoreAmount)
     self.minArcSize = playdate.math.lerp(30, 5, scoreT)
     self.maxArcSize = playdate.math.lerp(40, 15, scoreT)
 
+end
+
+function Level:ResyncWithMusic()
+    self.player:ResyncWithMusic()
 end
 
 local testArc = nil
